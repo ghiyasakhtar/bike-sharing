@@ -9,7 +9,7 @@ Proyek ini merupakan eksplorasi analisis data yang berfokus pada pemahaman pola 
 - Statistik Deskriptif dan Insight Data
 
 ## 📁 Dataset
-Dataset yang digunakan dalam proyek ini merupakan data layanan Bike Sharing. *(Silakan tambahkan nama atau sumber dataset jika diperlukan, misalnya "Bike Sharing Dataset UCI Repository")*.
+Dataset yang digunakan dalam proyek ini merupakan data layanan Bike Sharing.
 
 ## 📌 Ringkasan Insight
 Beberapa insight yang berhasil diperoleh dari analisis ini antara lain:
