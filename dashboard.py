@@ -1,88 +1,117 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
-import plotly.express as px
-import numpy as np
+import seaborn as sns
+import matplotlib.ticker as mtick
 
-day_df = pd.read_csv('day.csv')
-hour_df = pd.read_csv('hour.csv')
+per_hour = pd.read_csv("hour.csv")
+hour_df = per_hour.copy()
+day_df = pd.read_csv("day.csv")
 
-season_labels = {1: "Semi", 2: "Panas", 3: "Gugur", 4: "Dingin"}
-weather_labels = {
-    1: "Cerah, Sedikit berawan",
-    2: "Berkabut, mendung, berawan sebagian",
-    3: "Hujan ringan, salju ringan, badai petir ringan",
-}
-
-st.set_page_config(page_title="Dashboard Analisis Data", layout="wide")
-st.title("Dashboard Dicoding Project 'Bike Sharing' 📊 ")
-
-tab1, tab2 = st.tabs(["Visualisasi Data", "Analisis RFM"])
-
-with tab1:
-    st.subheader("Visualisasi Data")
-    season_filter = st.selectbox("Pilih Musim:", ["Semua"] + list(season_labels.values()))
-
-    if season_filter != "Semua":
-        selected_season = list(season_labels.keys())[list(season_labels.values()).index(season_filter)]
-        filtered_df = hour_df[hour_df['season'] == selected_season]
+def categorize_time(hour):
+    if 6 <= hour <= 11:
+        return "Pagi"
+    elif 12 <= hour <= 17:
+        return "Siang"
+    elif 18 <= hour <= 23:
+        return "Sore"
     else:
-        filtered_df = hour_df
+        return "Malam"
 
-    per_hour = filtered_df.groupby('hr').agg({'cnt': 'sum'}).reset_index()
-    peak_hours = per_hour.nlargest(5, 'cnt').sort_values(by='hr')
-    off_peak_hours = per_hour.nsmallest(5, 'cnt').sort_values(by='hr')
+hour_df["time_category"] = hour_df["hr"].apply(categorize_time)
 
-    fig1, ax1 = plt.subplots(figsize=(6, 3))
-    sns.barplot(data=peak_hours, x='hr', y='cnt', palette='crest', ax=ax1)
-    ax1.set_title("Jam dengan Penggunaan Tertinggi")
-    ax1.set_xlabel("Waktu (Jam)")
-    ax1.set_ylabel("Jumlah Pengguna")
-    st.pyplot(fig1)
+st.title("Bike Sharing Data Dashboard")
+st.write("Dashboard ini menampilkan analisis data penggunaan Bike Sharing berdasarkan waktu, musim, dan kondisi cuaca.")
 
-    fig2, ax2 = plt.subplots(figsize=(6, 3))
-    sns.barplot(data=off_peak_hours, x='hr', y='cnt', palette='crest', ax=ax2)
-    ax2.set_title("Jam dengan Penggunaan Terendah")
-    ax2.set_xlabel("Waktu (Jam)")
-    ax2.set_ylabel("Jumlah Pengguna")
-    st.pyplot(fig2)
+# --- Pertanyaan 1: Waktu Aktivitas Pengguna ---
+st.header("1st Insights: Aktivitas Pengguna Berdasarkan Waktu")
+peak_hours = per_hour.nlargest(5, "cnt").sort_values(by="hr")
+off_peak_hours = per_hour.nsmallest(5, "cnt").sort_values(by="hr")
 
-    day_df['season'] = day_df['season'].map(season_labels)
-    day_df['weathersit'] = day_df['weathersit'].map(weather_labels)
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown("<h2 style='font-size:15px; color:white;'>Jam dengan Penggunaan Tertinggi</h2>", unsafe_allow_html=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.barplot(data=peak_hours, x='hr', y='cnt', palette='crest', ax=ax)
+    ax.set_xticklabels([f"{h}:00" for h in peak_hours['hr']])
+    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}k'))
+    ax.set_xlabel("Waktu (Jam)")
+    ax.set_ylabel("Jumlah Pengguna")
+    st.pyplot(fig)
 
-    fig3 = px.bar(day_df, x='season', y='cnt', color='weathersit',
-                  title='Jumlah Pengguna berdasarkan Musim dan Kondisi Cuaca', width=600, height=350)
-    st.plotly_chart(fig3)
+with col2:
+    st.markdown("<h2 style='font-size:15px; color:white;'>Jam dengan Penggunaan Terendah</h2>", unsafe_allow_html=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.barplot(data=off_peak_hours, x='hr', y='cnt', palette='crest', ax=ax)
+    ax.set_xticklabels([f"{h}:00" for h in off_peak_hours['hr']])
+    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}k'))
+    ax.set_xlabel("Waktu (Jam)")
+    ax.set_ylabel("Jumlah Pengguna")
+    st.pyplot(fig)
 
-with tab2:
-    st.subheader("Analisis RFM")
+# --- Pertanyaan 2: Dampak Musim dan Cuaca ---
+st.header("2nd Insights: Pengaruh Musim dan Cuaca terhadap Penggunaan")
+option = st.selectbox("Jumlah Pengguna berdasarkan:",
+                      ["Musim dan Kondisi Cuaca",
+                       "Musim",
+                       "Kondisi Cuaca"])
 
-    rfm_data = pd.DataFrame({
-        'Recency': np.random.randint(1, 100, 500),
-        'Frequency': np.random.randint(1, 50, 500),
-        'Monetary': np.random.randint(1000, 50000, 500)
-    })
+if option == "Musim dan Kondisi Cuaca":
+    all_df = day_df.groupby(by=['season', 'weathersit']).agg({'cnt': 'sum'}).reset_index()
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(data=all_df, x='season', y='cnt', hue='weathersit', palette='crest', ax=ax)
+    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}k'))
+    ax.set_xlabel('Musim')
+    ax.set_ylabel('Jumlah Pengguna')
+    ax.set_title('Jumlah Pengguna berdasarkan Musim dan Kondisi Cuaca')
+    ax.legend(title='Kondisi Cuaca', bbox_to_anchor=(1.05, 1), loc='upper left')
+    st.pyplot(fig)
 
-    fig4, ax4 = plt.subplots(figsize=(6, 3))
-    sns.histplot(rfm_data['Recency'], bins=30, kde=True, ax=ax4)
-    ax4.set_title("Recency Distribution")
-    st.pyplot(fig4)
+elif option == "Musim":
+    seasonal_df = day_df.groupby(by='season').agg({'cnt': 'sum'}).reset_index()
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.barplot(data=seasonal_df, x='season', y='cnt', palette='coolwarm', ax=ax)
+    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}k'))
+    ax.set_xlabel('Musim')
+    ax.set_ylabel('Jumlah Pengguna')
+    ax.set_title('Jumlah Pengguna berdasarkan Musim')
+    st.pyplot(fig)
 
-    fig5, ax5 = plt.subplots(figsize=(6, 3))
-    sns.histplot(rfm_data['Monetary'], bins=30, kde=True, ax=ax5)
-    ax5.set_title("Monetary Distribution")
-    st.pyplot(fig5)
+elif option == "Kondisi Cuaca":
+    season_bound_df = day_df.groupby(by='weathersit').agg({'cnt': 'sum'}).reset_index()
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.barplot(data=season_bound_df, x='weathersit', y='cnt', palette='coolwarm', ax=ax)
+    ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}k'))
+    ax.set_xlabel('Kondisi Cuaca')
+    ax.set_ylabel('Jumlah Pengguna')
+    ax.set_title('Jumlah Pengguna berdasarkan Kondisi Cuaca')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=15)
+    st.pyplot(fig)
 
-    rfm_data['R_Score'] = pd.qcut(rfm_data['Recency'], q=4, labels=[4, 3, 2, 1])
-    rfm_data['M_Score'] = pd.qcut(rfm_data['Monetary'], q=4, labels=[1, 2, 3, 4])
-    rfm_pivot = rfm_data.pivot_table(index='R_Score', columns='M_Score', values='Recency', aggfunc='count')
+# --- Analisis Lanjutan: Clustering Waktu ---
+st.header("Analisis Lanjutan")
+st.subheader("Jumlah Pengguna berdasarkan Waktu Penggunaan")
+clustering_result = hour_df.groupby("time_category")["cnt"].sum().reset_index()
 
-    fig6, ax6 = plt.subplots(figsize=(6, 4))
-    sns.heatmap(rfm_pivot, annot=True, fmt=".0f", cmap="Blues", linewidths=0.5, ax=ax6)
-    ax6.set_title("Heatmap Skor RFM")
-    ax6.set_xlabel("Skor Monetary")
-    ax6.set_ylabel("Skor Recency")
-    st.pyplot(fig6)
+fig, ax = plt.subplots(figsize=(7, 4))
+sns.barplot(x="time_category", y="cnt", data=clustering_result, palette="crest", ax=ax)
+ax.set_xlabel("Kategori Waktu")
+ax.set_ylabel("Jumlah Pengguna")
+ax.set_title("Total Pengguna Berdasarkan Waktu Penggunaan")
+ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}k'))
+st.pyplot(fig)
+
+# --- Filter Data Berdasarkan Waktu ---
+with st.sidebar:
+    st.subheader("🔍See More Details Here")
+    st.write("Eksplorasi Data Berdasarkan Jam")
+    selected_hour = st.slider("Pilih Jam (0-23):", min_value=0, max_value=23, value=12)
+    filtered_data = per_hour[per_hour["hr"] == selected_hour]
+
+    if not filtered_data.empty:
+        st.write(f"Data untuk jam {selected_hour}:00")
+        st.dataframe(filtered_data)
+    else:
+        st.write("Tidak ada data untuk jam ini.")
 
 st.write("© 2025 - Ghiyas Akhtar Razi Ramadhan")
