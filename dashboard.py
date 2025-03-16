@@ -22,6 +22,7 @@ hour_df["time_category"] = hour_df["hr"].apply(categorize_time)
 
 st.title("Bike Sharing Data Dashboard")
 st.write("Dashboard ini menampilkan analisis data penggunaan Bike Sharing berdasarkan waktu, musim, dan kondisi cuaca.")
+st.image("https://raw.githubusercontent.com/ghiyasakhtar/bike-sharing/refs/heads/main/dataset-cover.jpeg")
 
 # --- Pertanyaan 1: Waktu Aktivitas Pengguna ---
 st.header("1st Insights: Aktivitas Pengguna Berdasarkan Waktu")
