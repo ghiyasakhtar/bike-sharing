@@ -102,17 +102,23 @@ ax.set_title("Total Pengguna Berdasarkan Waktu Penggunaan")
 ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, _: f'{int(x/1000)}k'))
 st.pyplot(fig)
 
-# --- Filter Data Berdasarkan Waktu ---
+# --- Estetika Tambahan ---
 with st.sidebar:
-    st.subheader("🔍See More Details Here")
-    st.write("Eksplorasi Data Berdasarkan Jam")
-    selected_hour = st.slider("Pilih Jam (0-23):", min_value=0, max_value=23, value=12)
-    filtered_data = per_hour[per_hour["hr"] == selected_hour]
+    st.markdown(
+        """
+        <style>
+            [data-testid="stSidebar"] {
+                background-color: #1E1E1E;
+                color: white;
+                padding: 20px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    if not filtered_data.empty:
-        st.write(f"Data untuk jam {selected_hour}:00")
-        st.dataframe(filtered_data)
-    else:
-        st.write("Tidak ada data untuk jam ini.")
-
+    st.sidebar.image("https://raw.githubusercontent.com/ghiyasakhtar/bike-sharing/refs/heads/main/bike-sharing-logo.png", width=150)
+    st.title("Bike Sharing Data Dashboard")
+    st.markdown("Dashboard ini menampilkan analisis data penggunaan Bike Sharing berdasarkan waktu, musim, dan kondisi cuaca.")
+    
 st.write("© 2025 - Ghiyas Akhtar Razi Ramadhan")
