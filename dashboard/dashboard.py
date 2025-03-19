@@ -22,7 +22,7 @@ def categorize_time(hour):
 
 hour_df["time_category"] = hour_df["hr"].apply(categorize_time)
 
-st.image("https://raw.githubusercontent.com/ghiyasakhtar/bike-sharing/refs/heads/main/dataset-cover.jpeg")
+st.image("https://raw.githubusercontent.com/ghiyasakhtar/bike-sharing/refs/heads/main/assets/dataset-cover.jpeg")
 
 # --- Pertanyaan 1: Waktu Aktivitas Pengguna ---
 st.header("📍 1st Insights: Aktivitas Pengguna Berdasarkan Waktu")
@@ -142,7 +142,7 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    st.sidebar.image("https://raw.githubusercontent.com/ghiyasakhtar/bike-sharing/refs/heads/main/bike-sharing-logo.png", width=300)
+    st.sidebar.image("https://raw.githubusercontent.com/ghiyasakhtar/bike-sharing/refs/heads/main/assets/bike-sharing-logo.png", width=300)
     st.title("Bike Sharing Data Dashboard")
     st.markdown("Halo, Selamat Datang! Dashboard ini menampilkan analisis data penggunaan **Bike Sharing** berdasarkan Waktu, Musim, dan Kondisi Cuaca.")
     st.markdown("---")
