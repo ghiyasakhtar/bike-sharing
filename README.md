@@ -56,6 +56,11 @@ jupyter notebook notebook.ipynb
 Atau gunakan Google Colab untuk menjalankan secara online.
 
 ### **3️⃣ Menjalankan Dashboard Interaktif**
+Navigasikan terlebih dahulu ke folder `dashboard` menggunakan perintah berikut:
+```bash
+cd dashboard
+```
+Kemudian jalankan streamlit:
 ```bash
 streamlit run dashboard.py
 ```
