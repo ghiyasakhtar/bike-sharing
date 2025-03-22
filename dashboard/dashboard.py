@@ -5,9 +5,9 @@ import seaborn as sns
 import matplotlib.ticker as mtick
 
 # Load Data
-per_hour = pd.read_csv("per_hour_df.csv")
-hour_df = pd.read_csv("hour_df.csv")
-day_df = pd.read_csv("day_df.csv")
+per_hour = pd.read_csv("./dashboard/per_hour_df.csv")
+hour_df = pd.read_csv("./dashboard/hour_df.csv")
+day_df = pd.read_csv("./dashboard/day_df.csv")
 
 # Fungsi untuk kategori waktu
 def categorize_time(hour):
