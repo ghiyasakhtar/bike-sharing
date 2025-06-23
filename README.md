@@ -66,6 +66,9 @@ streamlit run dashboard.py
 ```
 Pastikan file `dashboard.py` berada dalam direktori proyek yang benar.
 
-
 ## Penulis
 Ghiyas Akhtar Razi Ramadhan
+
+## Other Resources
+* **Deployed Site:** [bike-sharing-insights.streamlit.app/](https://bike-sharing-insights.streamlit.app/)
+* **Dataset:** [Bike Sharing Dataset | Kaggle](https://www.kaggle.com/datasets/lakshmi25npathi/bike-sharing-dataset)
